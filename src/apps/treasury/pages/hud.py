@@ -8,7 +8,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
-from src.apps.treasury.util.constants import BCT_ERC20_CONTRACT
+from src.apps.treasury.util.constants import BCT_ERC20_CONTRACT, KLIMA_GREEN
 from src.apps.treasury.data.protocol_metrics import \
     sg, last_metric, get_last_asset_price_by_address
 
@@ -26,14 +26,16 @@ metric_fig = go.Figure(
     go.Indicator(
         mode="number",
         value=sg.query([last_metric.marketCap]),
-        number={"prefix": "$", "valueformat": ".2s"},
+        number={"prefix": "$", "valueformat": ".2s", "font": {"family": "Poppins-ExtraBold"}},
         title={
             "text":
-            ("KLIMA <a title='KLIMA supply multiplied by current price' href="
+            ("KLIMA<br><b><a title='KLIMA supply multiplied by current price' href="
              "'https://www.coinbase.com/learn/crypto-basics/what-is-market-cap'>"
-             "Market Cap</a>")
+             "Market Cap</a></b>"),
+            'align': 'left',
+            "font": {"family": "Poppins-Bold", 'size': 30}
         },
-        domain={'y': [0, 0.5], 'x': [0.25, 0.75]},
+        domain={'y': [0, 0.35], 'x': [0.25, 0.75]},
     )
 )
 
@@ -42,12 +44,14 @@ metric_fig.add_trace(
     go.Indicator(
         mode="number",
         value=sg.query([last_metric.treasuryMarketValue]),
-        number={"prefix": "$", "valueformat": ".2s"},
+        number={"prefix": "$", "valueformat": ".2s", "font": {"family": "Poppins-ExtraBold"}},
         title={
             "text":
-            "Treasury <a href='https://en.wikipedia.org/wiki/Market_value'>Market Value</a>"
+            "Treasury<br><b><a href='https://en.wikipedia.org/wiki/Market_value'>Market Value</a></b>",
+            'align': 'left',
+            "font": {"family": "Poppins-Bold", 'size': 30}
         },
-        domain={'y': [0.5, 1], 'x': [0.25, 0.75]},
+        domain={'y': [0.65, 1], 'x': [0.25, 0.75]},
     )
 )
 
@@ -131,73 +135,78 @@ order = [
 
 
 # TODO: style holdings as $xx.yy[m/k] (i.e. human-formatted like indicators)
-# TODO: visualize targets in some way
+# TODO: visualize targets in a better way on single chart
 # TODO: load targets from Google Sheet for ease of maintenance
+color_map = {
+    'Op Ex': '#f2ae00',
+    'Carbon Forwards': '#6fff93',
+    'Carbon Backing': KLIMA_GREEN,
+    'Treasury Holdings': '#ddf641'
+}
+
 green_ratio_fig = px.pie(
     green_ratio_df, values="value",
     names="bucket", hole=.3, color="bucket",
-    color_discrete_map={
-        'Op Ex': '#f2ae00',
-        'Carbon Forwards': '#6fff93',
-        'Carbon Backing': '#00cc33',
-        'Treasury Holdings': '#ddf641'
-    },
+    color_discrete_map=color_map,
     category_orders={'bucket': order},
-    title="Green Ratio: Current",
+    title="Green Ratio:<br><b>Current</b>",
 )
 green_ratio_fig.update_layout(
-    title_x=0.5,
+    title_x=0.1,
+    title_font_size=30,
+    title_font_family='Poppins-Bold',
     legend=dict(
         yanchor='bottom',
-        y=-.5,
-        xanchor='auto',
-        x=.5
+        y=0,
+        xanchor='left',
+        x=1.25
     )
 )
 
 green_ratio_target_fig = px.pie(
     green_ratio_df, values="target",
     names="bucket", hole=.3, color="bucket",
-    color_discrete_map={
-        'Op Ex': '#f2ae00',
-        'Carbon Forwards': '#6fff93',
-        'Carbon Backing': '#00cc33',
-        'Treasury Holdings': '#ddf641'
-    },
+    color_discrete_map=color_map,
     category_orders={'bucket': order},
-    title="<a href='https://forum.klimadao.finance/d/285-rfc-green-ratio'>Green Ratio: Target</a>",
+    title="<a href='https://forum.klimadao.finance/d/285-rfc-green-ratio'>Green Ratio:<br><b>Target</b></a>",
 )
 green_ratio_target_fig.update_layout(
-    title_x=0.5,
+    title_x=0.1,
+    title_font_size=30,
+    title_font_family='Poppins-Bold',
     legend=dict(
         yanchor='bottom',
-        y=-.5,
-        xanchor='auto',
-        x=.5
+        y=0,
+        xanchor='left',
+        x=1.25
     )
 )
 
-layout = dbc.Container([
-    html.Div([
-        dbc.Row([
-            dbc.Col([
-                dcc.Graph(figure=metric_fig)
-            ], xs=12, sm=12, md=12, lg=4, xl=4),
-            dbc.Col([
-                dcc.Graph(figure=green_ratio_fig)
-            ], xs=12, sm=6, md=6, lg=4, xl=4),
-            dbc.Col([
-                dcc.Graph(figure=green_ratio_target_fig)
-            ], xs=12, sm=6, md=6, lg=4, xl=4)
-        ]),
-        dbc.Row([
-            dbc.Col([
-                dbc.Button(
-                    'Learn more',
-                    size='lg',
-                    href='https://dune.com/klimadao/klima'
-                )
-            ], xs=12, sm=12, md=12, lg=12, xl=12)
-        ])
-    ], className='center')
-], id='page_content_hud', fluid=True)
+layout = dbc.Container(
+    [
+        html.Div([
+            dbc.Row([
+                dbc.Col([
+                    dcc.Graph(figure=metric_fig)
+                ], xs=12, sm=12, md=12, lg=4, xl=4),
+                dbc.Col([
+                    dcc.Graph(figure=green_ratio_fig)
+                ], xs=12, sm=6, md=6, lg=4, xl=4),
+                dbc.Col([
+                    dcc.Graph(figure=green_ratio_target_fig)
+                ], xs=12, sm=6, md=6, lg=4, xl=4)
+            ]),
+            dbc.Row([
+                dbc.Col([
+                    dbc.Button(
+                        ['LEARN MORE   ', html.Img(src='./assets/arrow.svg')],
+                        size='lg',
+                        href='https://dune.com/klimadao/klima'
+                    )
+                ], xs=12, sm=12, md=12, lg=12, xl=12)
+            ])
+        ], className='center')
+    ],
+    id='page_content_hud', fluid=True,
+    style={'border': f'4px solid {KLIMA_GREEN}', 'border-radius': '30px', 'padding': '20px'}
+)

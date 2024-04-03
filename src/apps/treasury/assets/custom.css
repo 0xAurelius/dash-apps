@@ -11,6 +11,14 @@
   font-family: 'Poppins-SemiBold';
   src: url('Poppins/Poppins-SemiBold.ttf') format('truetype');
 }
+@font-face {
+  font-family: 'Poppins-Bold';
+  src: url('Poppins/Poppins-Bold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Poppins-ExtraBold';
+  src: url('Poppins/Poppins-ExtraBold.ttf') format('truetype');
+}
 /* Set the default font to Poppins regular*/
 *{
   font-family: 'Poppins', sans-serif;
@@ -67,4 +75,14 @@ body{
 
 .btn {
   background-color: #00cc33;
+  border: 0px;
+  border-radius: 500px;
+  color: #000;
+  padding-left: 50px;
+  padding-right: 50px;
+  font-family: 'Poppins-SemiBold';
+}
+
+a {
+  color: #00cc33;
 }
