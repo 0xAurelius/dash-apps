@@ -29,7 +29,7 @@ metric_fig = go.Figure(
         number={"prefix": "$", "valueformat": ".2s"},
         title={
             "text":
-            ("<a title='KLIMA supply multiplied by current price' href="
+            ("KLIMA <a title='KLIMA supply multiplied by current price' href="
              "'https://www.coinbase.com/learn/crypto-basics/what-is-market-cap'>"
              "Market Cap</a>")
         },
@@ -192,11 +192,10 @@ layout = dbc.Container([
         ]),
         dbc.Row([
             dbc.Col([
-                html.H3(
-                    html.A(
-                        'Learn more',
-                        href='https://dune.com/klimadao/klima'
-                    )
+                dbc.Button(
+                    'Learn more',
+                    size='lg',
+                    href='https://dune.com/klimadao/klima'
                 )
             ], xs=12, sm=12, md=12, lg=12, xl=12)
         ])
