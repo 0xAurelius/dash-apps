@@ -16,3 +16,5 @@ KLIMA_USDC_PAIR = '0x5786b267d35f9d011c4750e0b0ba584e1fdbead1'
 
 # Colors
 KLIMA_GREEN = '#00cc33'
+
+CACHE_TIMEOUT = 60 * 60  # 1 hour

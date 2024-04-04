@@ -16,16 +16,33 @@ ILLIQUID_ASSETS_GSHEET = 'https://docs.google.com/spreadsheets/d/1beNgV2Aemu01I-
 
 dash.register_page(__name__, title="KlimaDAO Treasury Heads Up Display")
 
-# TODO: add caching
 
-# TODO: combine repetitive queries to `last_metric` into a single DF call and unpack instead
-# last_metric_df = sg.query_df([last_metric.marketCap, last_metric.treasuryMarketValue, ...])
+def query_last_metric():
+    df = sg.query_df([
+        last_metric.marketCap,
+        last_metric.treasuryMarketValue,
+        last_metric.daoBalanceUSDC, last_metric.treasuryBalanceUSDC,
+        last_metric.treasuryMarketValue, last_metric.daoBalanceKLIMA,
+        last_metric.klimaPrice, last_metric.totalSupply
+    ])
+
+    df = df.rename({
+        c: c.replace('protocolMetrics_', '') for c in df.columns
+    }, axis=1)
+
+    return df
+
+
+last_metric_df = query_last_metric()
+
+mcap = last_metric_df.loc[0, 'marketCap']
+mval = last_metric_df.loc[0, 'treasuryMarketValue']
 
 # Market Cap indicator
 metric_fig = go.Figure(
     go.Indicator(
         mode="number",
-        value=sg.query([last_metric.marketCap]),
+        value=mcap,
         number={"prefix": "$", "valueformat": ".2s", "font": {"family": "Poppins-ExtraBold"}},
         title={
             "text":
@@ -43,7 +60,7 @@ metric_fig.add_trace(
     # Total Treasury Market Value ($) indicator
     go.Indicator(
         mode="number",
-        value=sg.query([last_metric.treasuryMarketValue]),
+        value=mval,
         number={"prefix": "$", "valueformat": ".2s", "font": {"family": "Poppins-ExtraBold"}},
         title={
             "text":
@@ -81,28 +98,26 @@ total_forwards = illiquid_assets[~illiquid_assets.Is_Spot]["Dollars"].sum()
 total_illiquid_spot = illiquid_assets[illiquid_assets.Is_Spot]["Dollars"].sum()
 
 # Pull sum of DAO and Treasury USDC holdings for OpEx
-dao_usdc, treasury_usdc = sg.query([last_metric.daoBalanceUSDC, last_metric.treasuryBalanceUSDC])
+dao_usdc = last_metric_df.loc[0, 'daoBalanceUSDC']
+treasury_usdc = last_metric_df.loc[0, 'treasuryBalanceUSDC']
 total_usdc = dao_usdc + treasury_usdc
 
 # Total treasury market value
 # TODO: check that treasuryMarketValue field includes all assets (raw carbon, all LPs, raw KLIMA)
 # TODO: add Solid World CRISP-C LP value
 # TODO: add offchain assets (added illiquid spot tonnes, may be other assets)
-(treasury_value, dao_klima, klima_price) = sg.query([
-    last_metric.treasuryMarketValue, last_metric.daoBalanceKLIMA,
-    last_metric.klimaPrice
-])
+treasury_value = last_metric_df.loc[0, 'treasuryMarketValue']
+dao_klima = last_metric_df.loc[0, 'daoBalanceKLIMA']
+klima_price = last_metric_df.loc[0, 'klimaPrice']
 
 # Add DAO KLIMA holdings since it is not considered part of OpEx bucket
 total_treasury_value = (
     treasury_value + (dao_klima * klima_price) + total_illiquid_spot
 )
 
-# TODO: make sure treasury KLIMA is included in treasuryMarketValue
-
 # Separate out enough lowest price carbon tonnes from total treasury value
 # to back all KLIMA supply as Carbon Backing
-klima_supply = sg.query([last_metric.totalSupply])
+klima_supply = last_metric_df.loc[0, 'totalSupply']
 
 # TODO: Replace hard-coded BCT with dynamic check for lowest priced tonne
 lowest_price_carbon_addr = BCT_ERC20_CONTRACT

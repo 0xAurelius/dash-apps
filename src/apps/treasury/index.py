@@ -1,6 +1,9 @@
 import dash
 from dash_extensions.enrich import html
+from flask_caching import Cache
+
 from src.apps.treasury.app import app
+from src.apps.treasury.util.constants import CACHE_TIMEOUT
 
 CONTENT_STYLE = {
     "position": "relative",
@@ -19,9 +22,24 @@ FOOTER_STYLE = {
     "background-color": "#FFF",
 }
 
-app.layout = html.Div([
-    dash.page_container
-])
+cache = Cache(
+    app.server,
+    config={
+        'CACHE_TYPE': 'filesystem',
+        'CACHE_DIR': '/tmp/cache-directory',
+        'CACHE_DEFAULT_TIMEOUT': CACHE_TIMEOUT
+    }
+)
+
+
+@cache.memoize()
+def get_layout():
+    return html.Div([
+        dash.page_container
+    ])
+
+
+app.layout = get_layout
 
 # For Gunicorn to reference
 server = app.server
