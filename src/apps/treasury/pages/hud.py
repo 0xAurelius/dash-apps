@@ -159,7 +159,7 @@ green_ratio_fig.update_layout(
         yanchor='bottom',
         y=0,
         xanchor='left',
-        x=1.25
+        x=0.9
     )
 )
 
@@ -178,7 +178,7 @@ green_ratio_target_fig.update_layout(
         yanchor='bottom',
         y=0,
         xanchor='left',
-        x=1.25
+        x=0.9
     )
 )
 
@@ -208,5 +208,5 @@ layout = dbc.Container(
         ], className='center')
     ],
     id='page_content_hud', fluid=True,
-    style={'border': f'4px solid {KLIMA_GREEN}', 'border-radius': '30px', 'padding': '20px'}
+    style={'border': f'2px solid {KLIMA_GREEN}', 'border-radius': '30px', 'padding': '20px'}
 )
