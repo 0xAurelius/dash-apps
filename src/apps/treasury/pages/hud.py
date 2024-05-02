@@ -168,7 +168,7 @@ green_ratio_fig = px.pie(
 )
 green_ratio_fig.update_layout(
     title_x=0.1,
-    title_font_size=30,
+    title_font_size=26,
     title_font_family='Poppins-Bold',
     legend=dict(
         yanchor='bottom',
@@ -187,7 +187,7 @@ green_ratio_target_fig = px.pie(
 )
 green_ratio_target_fig.update_layout(
     title_x=0.1,
-    title_font_size=30,
+    title_font_size=26,
     title_font_family='Poppins-Bold',
     legend=dict(
         yanchor='bottom',
