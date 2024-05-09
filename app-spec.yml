@@ -19,6 +19,10 @@ envs:
     scope: RUN_AND_BUILD_TIME
     type: SECRET
     value: ${WEB3_INFURA_PROJECT_ID}
+  - key: GRAPH_API_KEY
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: ${GRAPH_API_KEY}
   - key: PREFECT_API_KEY
     scope: RUN_AND_BUILD_TIME
     type: SECRET
