@@ -10,7 +10,7 @@ import plotly.express as px
 
 from src.apps.treasury.util.constants import BCT_ERC20_CONTRACT, KLIMA_GREEN
 from src.apps.treasury.data.protocol_metrics import \
-    sg, last_metric, get_last_asset_price_by_address
+    sg, last_metric, get_last_asset_price_by_address, protocol_metrics_subgraph
 
 ILLIQUID_ASSETS_GSHEET = 'https://docs.google.com/spreadsheets/d/1beNgV2Aemu01I-iyTsfOvHDTSevb0dj8GWXqo5KDShk'
 
@@ -76,26 +76,33 @@ metric_fig.add_trace(
 
 # Pull manual illiquid asset balances from Google Sheet
 illiquid_assets = pd.read_csv(
-    os.path.join(ILLIQUID_ASSETS_GSHEET, 'export?gid=0&format=csv'),
+    os.path.join(ILLIQUID_ASSETS_GSHEET, 'export?gid=38240267&format=csv'),
     # Set first column as rownames in data frame
     index_col=0,
     # Parse column values to datetime
-    parse_dates=['Date_Purchased'],
+    # parse_dates=['Date_Purchased'],
     skiprows=1
 )
 
+illiquid_assets = illiquid_assets.rename({
+    'quantity': 'Tons',
+    'total_cost': 'Dollars'
+}, axis=1)
+
 # Reformat fields
 illiquid_assets['Dollars'] = (
-    illiquid_assets.Dollars.str.replace(r'\$|,', '', regex=True).astype(float)
+    illiquid_assets.Dollars.astype(str).str.replace(r'\$|,', '', regex=True).astype(float)
 )
-illiquid_assets['Is_Spot'] = illiquid_assets.Is_Spot.astype('bool')
+# illiquid_assets['Is_Spot'] = illiquid_assets.Is_Spot.astype('bool')
 
 
 # Compute total forwards balance
-total_forwards = illiquid_assets[~illiquid_assets.Is_Spot]["Dollars"].sum()
+total_forwards = illiquid_assets["Dollars"].sum()
+# total_forwards = illiquid_assets[~illiquid_assets.Is_Spot]["Dollars"].sum()
 
 # Compute total illiquid spot credit balance
-total_illiquid_spot = illiquid_assets[illiquid_assets.Is_Spot]["Dollars"].sum()
+# total_illiquid_spot = illiquid_assets[illiquid_assets.Is_Spot]["Dollars"].sum()
+total_illiquid_spot = 0
 
 # Pull sum of DAO and Treasury USDC holdings for OpEx
 dao_usdc = last_metric_df.loc[0, 'daoBalanceUSDC']
