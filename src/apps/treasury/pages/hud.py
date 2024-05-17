@@ -10,7 +10,7 @@ import plotly.express as px
 
 from src.apps.treasury.util.constants import BCT_ERC20_CONTRACT, KLIMA_GREEN
 from src.apps.treasury.data.protocol_metrics import \
-    sg, last_metric, get_last_asset_price_by_address, protocol_metrics_subgraph
+    sg, last_metric, get_last_asset_price_by_address
 
 ILLIQUID_ASSETS_GSHEET = 'https://docs.google.com/spreadsheets/d/1beNgV2Aemu01I-iyTsfOvHDTSevb0dj8GWXqo5KDShk'
 
@@ -140,14 +140,14 @@ lowest_carbon_price = get_last_asset_price_by_address(BCT_ERC20_CONTRACT)
 # TODO: add logic to sum up balances until all KLIMA tokens are backed
 
 carbon_backing_usd = klima_supply * lowest_carbon_price
-treasury_value -= carbon_backing_usd
+total_treasury_value -= (carbon_backing_usd + treasury_usdc)
 
 # TODO: add descriptive tooltips to each label on the pie chart
 green_ratio_data = [
     {"bucket": "Op Ex", "value": total_usdc, "target": 0.1},
     {"bucket": "Carbon Forwards", "value": total_forwards, "target": 0.22},
     {"bucket": "Carbon Backing", "value": carbon_backing_usd, "target": 0.2},
-    {"bucket": "Treasury Holdings", "value": treasury_value, "target": 0.48}
+    {"bucket": "Treasury Holdings", "value": total_treasury_value, "target": 0.48}
 ]
 green_ratio_df = pd.DataFrame.from_records(green_ratio_data)
 order = [

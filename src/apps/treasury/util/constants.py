@@ -1,5 +1,19 @@
+import os
+
 # Subgraphs
-KLIMA_PROTOCOL_SUBGRAPH = 'https://api.thegraph.com/subgraphs/name/klimadao/klimadao-protocol-metrics'
+GRAPH_API_KEY = os.environ.get('GRAPH_API_KEY')
+GRAPH_BASE_URL = f'https://gateway-arbitrum.network.thegraph.com/api/{GRAPH_API_KEY}/subgraphs/id/'
+GRAPH_DEV_BASE_URL = 'https://api.studio.thegraph.com/query/71975/'
+GRAPH_VERSION_SUFFIX = '/version/latest'
+
+if os.environ.get('ENV') == 'production':
+    KLIMA_PROTOCOL_SUBGRAPH = (
+        'https://api.studio.thegraph.com/query/71975/staging-klimadao-protocol-metrics/version/latest'
+    )
+else:
+    KLIMA_PROTOCOL_SUBGRAPH = (
+        GRAPH_DEV_BASE_URL + 'staging-klimadao-protocol-metrics' + GRAPH_VERSION_SUFFIX
+    )
 
 BCT_ERC20_CONTRACT = '0x2f800db0fdb5223b3c3f354886d907a671414a7f'
 NCT_ERC20_CONTRACT = '0xD838290e877E0188a4A44700463419ED96c16107'
